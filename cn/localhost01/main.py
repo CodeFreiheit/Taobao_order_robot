@@ -2,8 +2,8 @@
 import time
 from selenium import webdriver
 from selenium.webdriver import ActionChains
+import urllib2
 
-import  urllib2
 from util.str_util import print_msg, send_mail
 from spider.taobao_climber import TaobaoClimber
 from spider.csdn_downloader import CsdnDownloader
@@ -25,9 +25,9 @@ if __name__ == '__main__':
 
     # 2.实例化driver
     # driver = webdriver.Firefox()  # 将Firefox浏览器驱动放于python根目录下
-    driver = webdriver.Chrome("D:\Python\chromedriver.exe")  # 将Chrome驱动放于python根目录下或者直接给出Chrome驱动路径
+    driver = webdriver.Chrome("/usr/bin/chromedriver")  # 将Chrome驱动放于python根目录下或者直接给出Chrome驱动路径
     action = ActionChains(driver)
-    driver.maximize_window()  # 浏览器最大化
+#    driver.maximize_window()  # 浏览器最大化
     driver.set_page_load_timeout(delay_wait)  # 设定页面加载限制时间
 
     TaobaoClimber.driver = CsdnDownloader.driver = MailSenderBrowser.driver = driver

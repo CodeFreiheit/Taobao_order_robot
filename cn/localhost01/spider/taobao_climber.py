@@ -9,13 +9,12 @@ import requests
 import json
 import sys
 from bs4 import BeautifulSoup
-# from cn.localhost01.util.str_util import print_msg
-from util.str_util import print_msg
+
+from cn.localhost01.util.str_util import print_msg
 
 # 对于py2，将ascii改为utf8
 reload(sys)
 sys.setdefaultencoding('utf8')
-
 
 class TaobaoClimber:
     def __init__(self, username, password):
@@ -90,10 +89,9 @@ class TaobaoClimber:
         result = []
         if self.__is_logined is False:
             if self.__login() is False:
-                print ("test10....")
-            # return result
+                # return result
+                print "taobao normal login failed"
             else:
-                print("...is true")
                 self.__is_logined = True
         try:
             self.driver.get(self.__orders_path)
