@@ -13,7 +13,7 @@
 6/7/8 待续
 9. 传值给邮件发送类，选择邮件发送模式：
     * 直接发送资源到买家邮箱【大于50M文件可能发送失败】；
-    Trip：文件压缩为zip，再进行发送（文件更小，且某些邮箱服务器不允许直接发送exe文件）
+    Trip：文件压缩为zip，再进行发送（文件更小，且某些邮箱服务器不允许直接发送可执行文件）
     * 发送新的下载地址到买家邮箱【需自有服务器】；`推荐`
     Trip：需配置静态资源服务器，如nginx，直接将下载文件夹映射出来；
     * 登录QQ邮箱，进行邮件发送。使用了AutoIt配合完成附件上传。
@@ -54,11 +54,11 @@ pip install chardet
 ```
 
 ## 其他说明
+* 已通过测试的操作系统: Windows 10/Ubuntu 16.04
 * 已通过测试的浏览器版本：Firefox 62.0/Chrome 69.0
 * 开启钱盾后，可能导致首次进入卖家中心失败，请手动关闭钱盾匹配弹窗或立即打开手机进行钱盾匹配
 
 ## 使用方法
-1. 下载Firefox驱动geckodriver.exe或者Chrome驱动chromedriver.exe，并复制到python根目录
+1. 下载Firefox驱动geckodriver或者Chrome驱动chromedriver，并复制到python根目录
 2. pip安装上面三方库以及浏览器
-3. 打开cn/localhost01/__init__.py，根据自己情况修改配置参数
-4. 运行“启动.bat”
+3. 新建account_info.txt文件，填写相应信息 #todo modify
