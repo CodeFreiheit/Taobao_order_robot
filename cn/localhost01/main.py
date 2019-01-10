@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-<<<<<<< HEAD
 import schedule
-=======
-
->>>>>>> d1c4221fd825f20605040fe87fe77183951d7ff1
 import time
 from selenium import webdriver
 from selenium.webdriver import ActionChains
@@ -54,6 +50,10 @@ if __name__ == '__main__':
     driver.execute_script("window.open('')")
 
     # 正则：解析留言内容
+    # re_note = re.compile(
+    #   ur"^留言:\s*([\w.-]+@[\w.-]+\.\w+)\s*$")  # 格式; 留言： +任意空格+邮箱
+
+    # 正则：解析留言内容
     re_note = re.compile(
         ur"^留言:[\u3000\u0020]*([\w.-]+@[\w.-]+\.\w+)\s*$")  # 格式; 留言： +任意空格+邮箱
 
@@ -74,10 +74,6 @@ if __name__ == '__main__':
         orders = climber.climb()
         orders_len = len(orders)
         for order in orders:
-<<<<<<< HEAD
-=======
-            print "order: ", order
->>>>>>> d1c4221fd825f20605040fe87fe77183951d7ff1
             if climber.deliver_judge(order[0]) is False:
                 print "这个订单已经发货"
                 continue
@@ -107,7 +103,6 @@ if __name__ == '__main__':
                 else:
                     print "更改该订单发货状态失败"
     time.sleep(5)
-<<<<<<< HEAD
 
 
 
@@ -117,5 +112,3 @@ if __name__ == '__main__':
 
 
 
-=======
->>>>>>> d1c4221fd825f20605040fe87fe77183951d7ff1
