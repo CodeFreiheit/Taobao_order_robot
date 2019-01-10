@@ -105,6 +105,15 @@ class TaobaoClimber:
         # 3.遍历每个订单div，获取数据
         data_array = []
         for index, order_div in enumerate(order_div_list):
+<<<<<<< HEAD
+=======
+            print index, order_div
+            # send_judge = order_div.find("div", {"class": "text-mod__link___1AAaX"})
+            # print send_judge
+            # # send_judge = self.driver.find_elements_by_class_name("卖家已发货")
+            # if send_judge:
+            #     continue
+>>>>>>> d1c4221fd825f20605040fe87fe77183951d7ff1
             order_id = order_div.find("input", attrs={"name": "orderid"}).attrs["value"]
             order_date = order_div.find("span",
                                         attrs={"data-reactid": re.compile(r"\.0\.5\.3:.+\.0\.1\.0\.0\.0\.6")}).text
@@ -227,9 +236,17 @@ class TaobaoClimber:
             # 1.进入确认发货页面
             self.driver.get(self.__deliver_path + orderId)
             # no_need_logistics_a = self.driver.find_element_by_xpath("//*[@id='dummyTab']/a")
+<<<<<<< HEAD
             # no_need_logistics_a.click()
             # self.driver.find_element_by_id("logis:noLogis").click()
             test = self.driver.find_element_by_id("logis:noLogis")
+=======
+            # print no_need_logistics_a
+            # no_need_logistics_a.click()
+            # self.driver.find_element_by_id("logis:noLogis").click()
+            test = self.driver.find_element_by_id("logis:noLogis")
+            print test
+>>>>>>> d1c4221fd825f20605040fe87fe77183951d7ff1
             time.sleep(1)
             return True
         except:
