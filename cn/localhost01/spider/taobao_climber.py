@@ -13,6 +13,8 @@ import requests
 from urllib2 import urlopen
 from bs4 import BeautifulSoup
 
+import threading
+
 # from cn.localhost01.util.str_util import print_msg
 from util.str_util import print_msg
 
@@ -22,6 +24,8 @@ from util.str_util import print_msg
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+
+event = threading.Event() #首先要获取一个event对象
 
 class TaobaoClimber:
     def __init__(self, username, password):
@@ -33,6 +37,7 @@ class TaobaoClimber:
     action = None
     # 是否登录
     __is_logined = False
+    __is_orders = False
     # 登陆URL
     __login_path = "https://login.taobao.com/member/login.jhtml?spm=a21bo.2017.754894437.1.5af911d9nrX75I&f=top&redirectURL=https%3A%2F%2Fwww.taobao.com%2F"
     # 卖家待发货订单URL
@@ -77,34 +82,29 @@ class TaobaoClimber:
         time.sleep(2)
         # html = BeautifulSoup(self.driver.page_source, "html5lib")
         # order_div_list = html.find_all("div", {"class": "item-mod__trade-order___2LnGB trade-order-main"})
-        # print order_div_list
         return True
 
     def __get_orders_page(self):
         # 1.bs4将资源转html
-        self.driver.get("https://myseller.taobao.com/home.htm")
-        self.driver.find_element_by_link_text("已卖出的宝贝").click()
-        self.driver.refresh
-        self.driver.switch_to_window(self.driver.window_handles[3])
-        # self.driver.get(__orders_path)
-        print self.driver.page_source
+        if self.__is_orders is False:
+            self.driver.get("https://myseller.taobao.com/home.htm")
+            self.driver.find_element_by_link_text("已卖出的宝贝").click()
+            self.driver.switch_to_window(self.driver.window_handles[3])
+        else:
+            self.driver.switch_to_window(self.driver.window_handles[3])
+            self.driver.get(self.driver.current_url)
+        # if self.__is_orders is False:
+        #     self.driver.switch_to_window(self.driver.window_handles[3])
+        # else:
+        #     self.driver.switch_to_window(self.driver.window_handles[4])
+        # self.driver.switch_to_window(self.driver.window_handles[3])
+        self.__is_orders = True  # 这个变量是什么作用？
         html = BeautifulSoup(self.driver.page_source, "html.parser")
-        # html = BeautifulSoup(self.driver.page_source, "html5lib")
-        print html
         # 2.取得所有的订单div
-        # order_div_list = html.find_all("div", {"class": "item-mod__trade-order___2LnGB trade-order-main"})
         order_div_list = html.find_all("div", {"class": "item-mod__trade-order___2LnGB trade-order-main"})
-
         # 3.遍历每个订单div，获取数据
-        print order_div_list
         data_array = []
         for index, order_div in enumerate(order_div_list):
-            print index, order_div
-            # send_judge = order_div.find("div", {"class": "text-mod__link___1AAaX"})
-            # print send_judge
-            # # send_judge = self.driver.find_elements_by_class_name("卖家已发货")
-            # if send_judge:
-            #     continue
             order_id = order_div.find("input", attrs={"name": "orderid"}).attrs["value"]
             order_date = order_div.find("span",
                                         attrs={"data-reactid": re.compile(r"\.0\.5\.3:.+\.0\.1\.0\.0\.0\.6")}).text
@@ -126,10 +126,12 @@ class TaobaoClimber:
                 return result
             else:
                 self.__is_logined = True
+        if self.__is_logined is True:
             while True:
                 # 2.获取当前页面的订单信息
                 time.sleep(2)  # 两秒等待页面加载
                 _orders = self.__get_orders_page()
+                result.extend(_orders)
                 try:
                     # 3.获取下一页按钮
                     next_page_li = self.driver.find_element_by_class_name("pagination-next")
@@ -225,11 +227,9 @@ class TaobaoClimber:
             # 1.进入确认发货页面
             self.driver.get(self.__deliver_path + orderId)
             # no_need_logistics_a = self.driver.find_element_by_xpath("//*[@id='dummyTab']/a")
-            # print no_need_logistics_a
             # no_need_logistics_a.click()
             # self.driver.find_element_by_id("logis:noLogis").click()
             test = self.driver.find_element_by_id("logis:noLogis")
-            print test
             time.sleep(1)
             return True
         except:

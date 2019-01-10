@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import schedule
 import time
 from selenium import webdriver
 from selenium.webdriver import ActionChains
@@ -16,6 +16,10 @@ import requests
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import formataddr
+
+import threading
+
+event = threading.Event() #首先要获取一个event对象
 
 if __name__ == '__main__':
     # 0.从本地文件读取账户信息
@@ -47,7 +51,7 @@ if __name__ == '__main__':
 
     # 正则：解析留言内容
     re_note = re.compile(
-      ur"^留言:\s*([\w.-]+@[\w.-]+\.\w+)\s*$")  # 格式; 留言： +任意空格+邮箱
+        ur"^留言:[\u3000\u0020]*([\w.-]+@[\w.-]+\.\w+)\s*$")  # 格式; 留言： +任意空格+邮箱
 
     # 休眠总时间
     sleep_total_time = 0
@@ -64,10 +68,8 @@ if __name__ == '__main__':
     while is_running:
         # 2.2爬取订单
         orders = climber.climb()
-        print "orders[0][3]: ", orders[0][3]
         orders_len = len(orders)
         for order in orders:
-            print "order: ", order
             if climber.deliver_judge(order[0]) is False:
                 print "这个订单已经发货"
                 continue
@@ -91,10 +93,11 @@ if __name__ == '__main__':
                    server.quit()  # 关闭连接
                 except Exception:  # 如果 try 中的语句没有执行，则会执行下面的 ret=False
                    ret = False
-                # if climber.delivered(order[0]) is True:
-                #     print "这个订单已经发货"
-                # else:
-                #     print "该订单发货状态失败"
+                # 2.6 订单改为已发货
+                if climber.delivered(order[0]) is True:
+                    print "更改这个订单为已经发货"
+                else:
+                    print "更改该订单发货状态失败"
     time.sleep(5)
 
 
