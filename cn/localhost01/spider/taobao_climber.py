@@ -29,9 +29,13 @@ event = threading.Event() #首先要获取一个event对象
 
 class TaobaoClimber:
     def __init__(self, username, password):
+        # mycookie = {"PHPSESSID": "56v9clgo1kdfo3q5q8ck0aaaaa"}
         self.__session = requests.Session()
         self.__username = username
         self.__password = password
+        # 将CookieJar转为字典：
+        # requests.utils.add_dict_to_cookiejar(x.cookies, {"PHPSESSID": "07et4ol1g7ttb0bnjmbiqjhp43"})
+
         # 用户信息
     driver = None
     action = None
@@ -73,15 +77,14 @@ class TaobaoClimber:
         # time.sleep(10)
         self.driver.find_element_by_id("J-login-btn").click()
         time.sleep(2)
-        cookies = self.driver.get_cookies()  # 导出cookie
-        for cookie in cookies:
-            self.__session.cookies.set(cookie['name'], cookie['value'])  # 转换cookies
-        # self.driver.get("https://myseller.taobao.com/home.htm")
-        # self.driver.get("https://trade.taobao.com/trade/itemlist/list_sold_items.htm?action=itemlist/SoldQueryAction&event_submit_do_query=1&auctionStatus=PAID&tabCode=waitSend")
-        # self.driver.find_element_by_link_text("已卖出的宝贝").click()
+        # 2.保存cookies
+        # self.driver.switch_to_default_content()  #需要返回主页面，不然获取的cookies不是登陆后cookies
+        list_cookies = self.driver.get_cookies()
+        cookies = {}
+        for s in list_cookies:
+            cookies[s['name']] = s['value']
+            requests.utils.add_dict_to_cookiejar(self.__session.cookies, cookies)  # 将获取的cookies设置到session
         time.sleep(2)
-        # html = BeautifulSoup(self.driver.page_source, "html5lib")
-        # order_div_list = html.find_all("div", {"class": "item-mod__trade-order___2LnGB trade-order-main"})
         return True
 
     def __get_orders_page(self):
@@ -90,6 +93,11 @@ class TaobaoClimber:
             self.driver.get("https://myseller.taobao.com/home.htm")
             self.driver.find_element_by_link_text("已卖出的宝贝").click()
             self.driver.switch_to_window(self.driver.window_handles[3])
+            list_cookies = self.driver.get_cookies()
+            cookies = {}
+            for s in list_cookies:
+                cookies[s['name']] = s['value']
+                requests.utils.add_dict_to_cookiejar(self.__session.cookies, cookies)  # 将获取的cookies设置到session
         else:
             self.driver.switch_to_window(self.driver.window_handles[3])
             self.driver.get(self.driver.current_url)
@@ -110,16 +118,17 @@ class TaobaoClimber:
                                         attrs={"data-reactid": re.compile(r"\.0\.5\.3:.+\.0\.1\.0\.0\.0\.6")}).text
             order_buyer = order_div.find("a", attrs={"class": "buyer-mod__name___S9vit"}).text
             # 4.根据订单id组合url，请求订单对应留言
-            self.__session.get(self.__message_path + order_id)
-            # order_message = json.loads(self.__session.get(self.__message_path + order_id).text)['tip']
-            order_message = u'留言:820713556@qq.com'
+            # test_cookies = self.__session.get((self.__message_path + order_id),cookies = cookies,headers=headers)
+            order_message = json.loads(self.__session.get(self.__message_path + order_id).text)['tip']
+            # order_message = json.loads(self.__session.get(test_cookies).text)['tip']
+            # order_message = u'留言:820713556@qq.com'
             data_array.append((order_id, order_date, order_buyer, order_message))
         return data_array
 
     def climb(self):
         # FIXME 没有真实订单的模拟测试，生产环境注释即可
         # order_test = [(u"留言: 820713556@qq.com"),]
-        self.__session = requests.Session()
+        # self.__session = requests.Session()
         # 切换回窗口
         self.driver.switch_to_window(self.driver.window_handles[0])  # _homepage
         result = []
