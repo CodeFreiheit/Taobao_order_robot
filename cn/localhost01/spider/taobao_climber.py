@@ -110,7 +110,9 @@ class TaobaoClimber:
                                         attrs={"data-reactid": re.compile(r"\.0\.5\.3:.+\.0\.1\.0\.0\.0\.6")}).text
             order_buyer = order_div.find("a", attrs={"class": "buyer-mod__name___S9vit"}).text
             # 4.根据订单id组合url，请求订单对应留言
-            order_message = json.loads(self.__session.get(self.__message_path + order_id).text)['tip']
+            self.__session.get(self.__message_path + order_id)
+            # order_message = json.loads(self.__session.get(self.__message_path + order_id).text)['tip']
+            order_message = u'留言:820713556@qq.com'
             data_array.append((order_id, order_date, order_buyer, order_message))
         return data_array
 
