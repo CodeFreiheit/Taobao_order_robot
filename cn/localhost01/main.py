@@ -4,20 +4,19 @@ import time
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 import  urllib2
+from bs4 import BeautifulSoup
+import requests
+import smtplib
+from email.mime.text import MIMEText
+from email.utils import formataddr
+import threading
+
 from util.str_util import print_msg, send_mail
 from spider.taobao_climber import TaobaoClimber
 from spider.csdn_downloader import CsdnDownloader
 from mail.mail_sender_browser import MailSenderBrowser
 from mail.mail_sender import *
 from __init__ import *
-from bs4 import BeautifulSoup
-import requests
-
-import smtplib
-from email.mime.text import MIMEText
-from email.utils import formataddr
-
-import threading
 
 event = threading.Event() #首先要获取一个event对象
 
@@ -27,6 +26,9 @@ if __name__ == '__main__':
         lines = [l.strip('\n') for l in f.readlines()]
     taobao_username = lines[0]
     taobao_password = lines[1]
+    mail_username = lines[2]
+    mail_password = lines[3]
+
     # 1.给相关对象传入账号密码
     climber = TaobaoClimber(taobao_username, taobao_password)
     # downloader = CsdnDownloader(csdn_username, csdn_password)
@@ -62,10 +64,6 @@ if __name__ == '__main__':
     # 存在未留言订单
     exists_no_note_order = False
 
-    my_sender = '2428264408@qq.com'  # 发件人邮箱账号
-    my_pass = 'bggctvmclcgkecce'  # 发件人邮箱密码
-    # my_user = '820713556@qq.com'  # 收件人邮箱账号，我这边发送给自己
-
     # 2.1上架宝贝
     # climber.shelve()
     is_running = True
@@ -89,13 +87,13 @@ if __name__ == '__main__':
                 ret = True
                 try:
                    msg = MIMEText('test5', 'plain', 'utf-8')
-                   msg['From'] = formataddr(["FromRunoob", my_sender])  # 括号里的对应发件人邮箱昵称、发件人邮箱账号
+                   msg['From'] = formataddr(["FromRunoob", mail_username])  # 括号里的对应发件人邮箱昵称、发件人邮箱账号
                    msg['To'] = formataddr(["FK", my_user])  # 括号里的对应收件人邮箱昵称、收件人邮箱账号
                    msg['Subject'] = "菜鸟教程发送邮件测试"  # 邮件的主题，也可以说是标题
 
                    server = smtplib.SMTP_SSL("smtp.qq.com", 465)  # 发件人邮箱中的SMTP服务器，端口是25
-                   server.login(my_sender, my_pass)  # 括号中对应的是发件人邮箱账号、邮箱密码
-                   server.sendmail(my_sender, [my_user, ], msg.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
+                   server.login(mail_username, mail_password)  # 括号中对应的是发件人邮箱账号、邮箱密码
+                   server.sendmail(mail_username, [my_user, ], msg.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
                    server.quit()  # 关闭连接
                 except Exception:  # 如果 try 中的语句没有执行，则会执行下面的 ret=False
                    ret = False
