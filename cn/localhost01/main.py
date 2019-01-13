@@ -70,6 +70,8 @@ if __name__ == '__main__':
     # climber.shelve()
     is_running = True
     while is_running:
+        localtime = time.asctime(time.localtime(time.time()))
+        print localtime
         # 2.2爬取订单
         orders = climber.climb()
         orders_len = len(orders)
