@@ -13,7 +13,6 @@ import threading
 
 from util.str_util import print_msg, send_mail
 from spider.taobao_climber import TaobaoClimber
-from spider.csdn_downloader import CsdnDownloader
 from mail.mail_sender_browser import MailSenderBrowser
 from mail.mail_sender import *
 from __init__ import *
@@ -31,7 +30,6 @@ if __name__ == '__main__':
 
     # 1.给相关对象传入账号密码
     climber = TaobaoClimber(taobao_username, taobao_password)
-    # downloader = CsdnDownloader(csdn_username, csdn_password)
     sender = MailSender(mail_username, mail_authorization_code)
     sender_browser = MailSenderBrowser(mail_username, mail_password, mail_password2)
 
@@ -41,8 +39,8 @@ if __name__ == '__main__':
     action = ActionChains(driver)
     driver.maximize_window()  # 浏览器最大化
     driver.set_page_load_timeout(delay_wait)  # 设定页面加载限制时间
-    TaobaoClimber.driver = CsdnDownloader.driver = MailSenderBrowser.driver = driver
-    TaobaoClimber.action = CsdnDownloader.action = MailSenderBrowser.action = action
+    TaobaoClimber.driver = MailSenderBrowser.driver = driver
+    TaobaoClimber.action = MailSenderBrowser.action = action
 
     # 3.建立标签页
     ## 默认淘宝标签页
@@ -102,7 +100,7 @@ if __name__ == '__main__':
                     print "更改这个订单为已经发货"
                 else:
                     print "更改该订单发货状态失败"
-        time.sleep(20)
+        time.sleep(60)
 
 
 
