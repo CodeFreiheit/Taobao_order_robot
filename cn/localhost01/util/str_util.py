@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-# from cn.localhost01.mail.mail_sender import Mail
-
-from mail.mail_sender import Mail
-# from cn.localhost01.__init__ import master_mail
-# from .__init__ import master_mail
 import chardet
 import sys
+
+from cn.localhost01.mail.mail_sender import Mail
+from cn.localhost01.__init__ import master_mail
 
 # 初始化输出编码
 print_code_mode = 'utf-8'

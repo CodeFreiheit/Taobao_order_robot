@@ -102,7 +102,7 @@ if __name__ == '__main__':
                     print "更改这个订单为已经发货"
                 else:
                     print "更改该订单发货状态失败"
-    time.sleep(5)
+        time.sleep(20)
 
 
 
