@@ -17,9 +17,6 @@ from mail.mail_sender_browser import MailSenderBrowser
 from mail.mail_sender import *
 from __init__ import *
 
-# TODO 下面这句能否去掉
-event = threading.Event() #首先要获取一个event对象
-
 if __name__ == '__main__':
     # 0.从本地文件读取账户信息
     with open(account_info_file, 'r') as f:
@@ -58,11 +55,17 @@ if __name__ == '__main__':
     # 存在未留言订单
     exists_no_note_order = False
 
-    # TODO test5改为百度云链接以及密码
-    msg = MIMEText('download link', 'plain', 'utf-8')
-    # TODO FromRunoob改为淘宝店名
-    msg['From'] = formataddr(["TaobaoSeller", mail_username])  # 括号里的对应发件人邮箱昵称、发件人邮箱账号
-    msg['Subject'] = "下载链接，请及时查收，无须回复"  # 邮件的主题，也可以说是标题
+    # 邮件固定格式
+    ## 发给买家链接
+    # TODO 百度云链接以及密码
+    msgLink = MIMEText('download link', 'plain', 'utf-8')
+    # TODO 淘宝店名
+    msgLink['From'] = formataddr(["Seller", mail_username])  # 括号里的对应发件人邮箱昵称、发件人邮箱账号
+    msgLink['Subject'] = "下载链接，请及时查收，无须回复；如链接失效，请在淘宝内联系卖家"  # 邮件的主题，也可以说是标题
+    ## 提醒卖家发送失败
+    msgFailure['From'] = formataddr(["Seller", mail_username])  # 括号里的对应发件人邮箱昵称、发件人邮箱账号
+    msgFailure['To'] = formataddr["Seller", mail_username]
+    msgFailure['Subject'] = "存在订单发送邮件失败，请及时处理"  # 邮件的主题，也可以说是标题
 
     # 2.1上架宝贝
     # climber.shelve()
@@ -86,20 +89,27 @@ if __name__ == '__main__':
             if mail_send_type == 2:
                 ret = True
                 try:
-                    msg['To'] = formataddr(["FK", my_user])  # 括号里的对应收件人邮箱昵称、收件人邮箱账号
+                    # TODO 买家昵称
+                    msgLink['To'] = formataddr(["Purchaser", my_user])  # 括号里的对应收件人邮箱昵称、收件人邮箱账号
 
                     server = smtplib.SMTP_SSL("smtp.qq.com", 465)  # 发件人邮箱中的SMTP服务器，端口是25
                     server.login(mail_username, mail_password)  # 括号中对应的是发件人邮箱账号、邮箱密码
-                    server.sendmail(mail_username, [my_user, ], msg.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
+                    server.sendmail(mail_username, [my_user, ], msgLink.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
                     server.quit()  # 关闭连接
                 except Exception:  # 如果 try 中的语句没有执行，则会执行下面的 ret=False
                     print "邮件发送失败"
+
                     # TODO 发送邮件提醒卖家
+                    msgFailure = MIMEText('Purchaser\'s email', 'plain', 'utf-8')
+                    server = smtplib.SMTP_SSL("smtp.qq.com", 465)  # 发件人邮箱中的SMTP服务器，端口是25
+                    server.login(mail_username, mail_password)  # 括号中对应的是发件人邮箱账号、邮箱密码
+                    server.sendmail(mail_username, [my_user, ], msgFailure.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
+                    server.quit()  # 关闭连接
+
                     ret = False
                 # 2.6 订单改为已发货
                 if climber.delivered(order[0]) is True:
                     print "更改这个订单为已经发货"
                 else:
                     print "更改该订单发货状态失败"
-                    # TODO 更改订单状态失败，应发邮件提醒卖家
         time.sleep(60)
