@@ -126,10 +126,11 @@ class TaobaoClimber:
         return data_array
 
     def climb(self):
-        # FIXME 没有真实订单的模拟测试，生产环境注释即可
-        # order_test = [(u"留言: 820713556@qq.com"),]
-        # self.__session = requests.Session()
-        # 切换回窗口
+        # # FIXME 没有真实订单的模拟测试，生产环境注释即可
+        # order_test = [("Test_1548615412315", "2019-01-27 20:00:03", "nobody",
+        #                u"留言: teragump@qq.com")]
+        # return order_test
+
         self.driver.switch_to_window(self.driver.window_handles[0])  # _homepage
         result = []
         if self.__is_logined is False:
